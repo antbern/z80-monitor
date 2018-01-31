@@ -49,7 +49,7 @@
 
 
 ; Register port definitions for the CF-card interface
-CF_BASE         .EQU        $60
+CF_BASE         .EQU        $40
 
 CF_DATA         .EQU        CF_BASE + 0
 CF_ERROR        .EQU        CF_BASE + 1

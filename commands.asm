@@ -6,6 +6,9 @@ str_cmd_help	.db		"help", EOS
 str_cmd_breaktest .db	"break", EOS
 str_cmd_continue .db	"cont", EOS
 str_cmd_reg		.db		"reg", EOS
+str_cmd_cf_init .db		"cfinit", EOS
+str_cmd_cf_id	.db		"cfid", EOS
+str_cmd_cf_read .db		"cfread", EOS
 
 command_table:	.dw		str_cmd_help, cmd_help
 				.dw		str_cmd_dump, cmd_dump	; dump command
@@ -14,6 +17,9 @@ command_table:	.dw		str_cmd_help, cmd_help
 				.dw		str_cmd_test, cmd_test	; test command
 				.dw		str_cmd_breaktest, cmd_breaktest ; breaktest command
 				.dw		str_cmd_reg, dump_registers ; dump registers command
+				.dw		str_cmd_cf_init, cf_init
+				.dw 	str_cmd_cf_id, cmd_cf_id
+				.dw		str_cmd_cf_read, cmd_cf_read
 command_table_entries	.EQU	($ - command_table) / (2*2)	; calculate size using bytes
 
 
@@ -194,6 +200,27 @@ cmd_breaktest_loop:
 				ret
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; cmd_cf_id - loads and dumps the ID sector of the CF card
+cmd_cf_id:		ld		HL, cf_sector_buffer	; pointer to cf sector buffer in RAM
+				call	cf_read_id
+
+				ret		C
+
+				ld		HL, cf_sector_buffer	; pointer to cf sector buffer in RAM
+				ld		DE, cf_sector_buffer + 512 ; end of cf sector buffer in RAM
+				call	dump_memory
+				ret
+
+
+cmd_cf_read:	ld		HL, cf_sector_buffer	; pointer to cf sector buffer in RAM
+				call	cf_read_id
+
+
+				ld		HL, cf_sector_buffer	; pointer to cf sector buffer in RAM
+				ld		DE, cf_sector_buffer + 512 ; end of cf sector buffer in RAM
+				call	dump_memory
+				ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DOES NOT WORK ANYMORE:::::...-.-.!:!!:!:
 cmd_test:		call	print_string
